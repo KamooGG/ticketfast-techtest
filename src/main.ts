@@ -7,11 +7,10 @@ const app = createApp(App);
 const pinia = createPinia();
 
 app.use(pinia);
+app.use(router);
 
 import { useTicketStore } from "./store/ticketStore";
 const store = useTicketStore(pinia);
 store.loadFromStorage();
 
 app.mount("#app");
-
-createApp(App).use(router).mount("#app");

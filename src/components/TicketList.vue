@@ -192,22 +192,22 @@ tr {
 .badge {
     padding: .2rem .5rem;
     border-radius: 6px;
-    font-weight: 600
+    font-weight: 600;
 }
 
 .badge.open {
     background: #d1fae5;
-    color: #065f46
+    color: #065f46;
 }
 
 .badge.progress {
     background: #fef3c7;
-    color: #92400e
+    color: #92400e;
 }
 
 .badge.closed {
     background: #fee2e2;
-    color: #991b1b
+    color: #991b1b;
 }
 
 /* Menú emergente */

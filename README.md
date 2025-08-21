@@ -1,5 +1,42 @@
-# Vue 3 + TypeScript + Vite
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+# TicketFast
+TicketFast es una aplicación de ejemplo para la prueba técnica de TicketFast. Proporciona una base con Vue 3, TypeScript y Vite para construir una interfaz de gestión de eventos y venta de entradas.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## Objetivos
+
+- Servir como punto de partida para desarrollar funcionalidades del sistema TicketFast.
+- Mostrar el uso de Vue 3 con TypeScript y Pinia en un entorno de Vite.
+
+## Instalación
+
+1. Instala las dependencias con:
+
+   ```bash
+   npm install
+   ```
+
+## Ejecución
+
+- Modo desarrollo:
+
+  ```bash
+  npm run dev
+  ```
+
+  La aplicación estará disponible en `http://localhost:5173`.
+
+- Compilar para producción:
+
+  ```bash
+  npm run build
+  ```
+
+- Previsualizar la build:
+
+  ```bash
+  npm run preview
+  ```
+
+## Documentación
+
+Consulta la [documentación del proyecto](docs/README.md) para más información.
