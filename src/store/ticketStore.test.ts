@@ -3,13 +3,17 @@ import { createPinia, setActivePinia } from "pinia";
 import { mount } from "@vue/test-utils";
 import { useTicketStore } from "./ticketStore";
 
+// Grupo de pruebas para el store de tickets
 describe("ticket store", () => {
     let store: ReturnType<typeof useTicketStore>;
 
+    // Antes de cada prueba, configura el entorno de pruebas
     beforeEach(() => {
+        // Usa temporizadores falsos para controlar la fecha/hora
         vi.useFakeTimers();
         vi.setSystemTime(new Date("2023-01-01T00:00:00Z"));
 
+        // Stub de localStorage en memoria para aislar las pruebas
         const storage: Record<string, string> = {};
         vi.stubGlobal("localStorage", {
             getItem: (key: string) => storage[key] ?? null,
@@ -24,20 +28,23 @@ describe("ticket store", () => {
             },
         });
 
+        // Inicializa Pinia y el store para cada prueba
         const pinia = createPinia();
         /**
-         * Deletes all the key-value pairs in the localStorage.
+         * Elimina todos los pares clave-valor en el localStorage.
          */
         setActivePinia(pinia);
         mount({ template: "<div />" }, { global: { plugins: [pinia] } });
         store = useTicketStore();
     });
 
+    // Después de cada prueba, restaura temporizadores y elimina stubs globales
     afterEach(() => {
         vi.useRealTimers();
         vi.unstubAllGlobals();
     });
 
+    // Prueba: agregar un ticket al store
     it("adds a ticket", () => {
         store.addTicket({
             title: "Nuevo Ticket",
@@ -55,6 +62,7 @@ describe("ticket store", () => {
         });
     });
 
+    // Prueba: actualizar un ticket existente
     it("updates a ticket", () => {
         store.addTicket({
             title: "Ticket",
@@ -65,6 +73,7 @@ describe("ticket store", () => {
         const id = store.tickets[0].id;
         const originalUpdatedAt = store.tickets[0].updatedAt;
 
+        // Cambia la fecha/hora simulada antes de actualizar
         vi.setSystemTime(new Date("2023-01-02T00:00:00Z"));
         store.updateTicket(id, { title: "Actualizado", status: "En Progreso" });
 
@@ -73,9 +82,11 @@ describe("ticket store", () => {
             title: "Actualizado",
             status: "En Progreso",
         });
+        // Verifica que la fecha de actualización haya cambiado
         expect(store.tickets[0].updatedAt).not.toBe(originalUpdatedAt);
     });
 
+    // Prueba: eliminar un ticket del store
     it("deletes a ticket", () => {
         store.addTicket({
             title: "Ticket",

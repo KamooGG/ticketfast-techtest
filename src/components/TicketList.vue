@@ -1,27 +1,32 @@
 <script setup lang="ts">
+// Importaciones de Vue y del store de tickets
 import { ref, computed, reactive, onMounted, onBeforeUnmount } from "vue";
 import { useTicketStore, type Ticket } from "../store/ticketStore";
 
+// Instancia del store de tickets
 const store = useTicketStore();
 
+// Filtros de búsqueda y selección
 const search = ref("");
 const statusFilter = ref<"" | "Abierto" | "En Progreso" | "Cerrado">("");
 const priorityFilter = ref<"" | "Alta" | "Media" | "Baja">("");
 
-// Menú contextual
+// Estado reactivo para el menú contextual
 const ctx = reactive<{
-    open: boolean;
-    x: number;
-    y: number;
-    ticket: Ticket | null;
+    open: boolean;   // Si el menú está abierto
+    x: number;       // Posición X del menú
+    y: number;       // Posición Y del menú
+    ticket: Ticket | null; // Ticket seleccionado en el menú
 }>({ open: false, x: 0, y: 0, ticket: null });
 
+// Definición de eventos emitidos por el componente
 const emit = defineEmits<{
     (e: "view", t: Ticket): void;
     (e: "edit", t: Ticket): void;
     (e: "delete", t: Ticket): void;
 }>();
 
+// Computed para filtrar los tickets según los filtros y búsqueda
 const filteredTickets = computed(() =>
     store.tickets.filter((t) => {
         const byText = t.title.toLowerCase().includes(search.value.toLowerCase());
@@ -32,6 +37,8 @@ const filteredTickets = computed(() =>
 );
 
 // === Helpers menú ===
+
+// Limita la posición del menú contextual para que no se salga de la pantalla
 function clampMenuPosition(x: number, y: number) {
     const MENU_W = 180;
     const MENU_H = 132; // aprox 3 items
@@ -42,6 +49,7 @@ function clampMenuPosition(x: number, y: number) {
     return { x: nx, y: ny };
 }
 
+// Abre el menú contextual en la posición del mouse y asocia el ticket
 function openMenu(ev: MouseEvent, t: Ticket) {
     ev.preventDefault();
     ev.stopPropagation(); // evita que un click global cierre antes de abrir
@@ -54,24 +62,27 @@ function openMenu(ev: MouseEvent, t: Ticket) {
     ctx.y = y;
     ctx.ticket = t;
 
-    // listeners para cerrar
+    // listeners para cerrar el menú al hacer click fuera
     window.addEventListener("click", onWindowClick, { once: true });
 }
 
+// Cierra el menú contextual
 function onWindowClick() {
     ctx.open = false;
     ctx.ticket = null;
 }
 
+// Cierra el menú contextual al presionar Escape
 function onKeydown(e: KeyboardEvent) {
     if (e.key === "Escape") onWindowClick();
 }
 
+// Cierra el menú contextual si se hace scroll o resize
 function onScrollOrResize() {
-    // si se mueve el viewport, cerramos
     onWindowClick();
 }
 
+// Ejecuta la acción seleccionada en el menú contextual
 function choose(action: "view" | "edit" | "delete") {
     if (!ctx.ticket) return;
     const t = ctx.ticket;
@@ -82,6 +93,7 @@ function choose(action: "view" | "edit" | "delete") {
     if (action === "delete") emit("delete", t);
 }
 
+// Añade y elimina listeners globales al montar/desmontar el componente
 onMounted(() => {
     window.addEventListener("keydown", onKeydown);
     window.addEventListener("scroll", onScrollOrResize, { passive: true });
@@ -96,8 +108,9 @@ onBeforeUnmount(() => {
 
 <template>
     <div class="ticket-list">
-        <h2>📋 Lista de Tickets</h2>
+        <h2>Lista de Tickets</h2>
 
+        <!-- Filtros de búsqueda, estado y prioridad -->
         <div class="filters">
             <input v-model="search" type="text" placeholder="Buscar por título..." />
             <select v-model="statusFilter">
@@ -114,7 +127,8 @@ onBeforeUnmount(() => {
             </select>
         </div>
 
-        <!-- Importante: @contextmenu en TR y también @click para abrir con clic normal -->
+        <!-- Tabla de tickets -->
+        <!-- @contextmenu y @click abren el menú contextual -->
         <table @contextmenu.prevent>
             <thead>
                 <tr>
@@ -131,6 +145,7 @@ onBeforeUnmount(() => {
                     <td>{{ t.id }}</td>
                     <td>{{ t.title }}</td>
                     <td>
+                        <!-- Badge de estado con color según el valor -->
                         <span
                             :class="['badge', t.status === 'Abierto' ? 'open' : t.status === 'En Progreso' ? 'progress' : 'closed']">
                             {{ t.status }}
@@ -145,12 +160,12 @@ onBeforeUnmount(() => {
             </tbody>
         </table>
 
-        <!-- Menú emergente -->
+        <!-- Menú contextual emergente -->
         <div v-if="ctx.open" class="ctx-menu" :style="{ left: ctx.x + 'px', top: ctx.y + 'px' }" role="menu"
             @click.stop>
-            <button class="item" @click="choose('view')">🔎 Detalle</button>
-            <button class="item" @click="choose('edit')">✏️ Editar</button>
-            <button class="item danger" @click="choose('delete')">🗑️ Eliminar</button>
+            <button class="item" @click="choose('view')">Detalle</button>
+            <button class="item" @click="choose('edit')">Editar</button>
+            <button class="item danger" @click="choose('delete')">Eliminar</button>
         </div>
     </div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-    <!-- KPIs -->
+    <!-- KPIs: muestra los totales y conteos por estado -->
     <section class="kpis card">
         <div class="kpi">
             <span class="label">Total</span>
@@ -19,12 +19,13 @@
         </div>
     </section>
 
-    <!-- Gráficos -->
+    <!-- Gráficos de tickets por estado y prioridad -->
     <section class="grid-graphs">
         <article class="card chart-wrap">
             <header class="chart-header">
                 <h3>Tickets por estado</h3>
             </header>
+            <!-- Gráfico tipo torta para estados -->
             <canvas ref="statusCanvas" aria-label="Gráfico por estado"></canvas>
         </article>
 
@@ -32,47 +33,53 @@
             <header class="chart-header">
                 <h3>Tickets por prioridad</h3>
             </header>
+            <!-- Gráfico tipo barra para prioridades -->
             <canvas ref="priorityCanvas" aria-label="Gráfico por prioridad"></canvas>
         </article>
     </section>
 </template>
 
 <script setup lang="ts">
+// Importaciones de Vue, store y Chart.js
 import { computed, onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { useTicketStore } from "../store/ticketStore";
 import Chart from "chart.js/auto";
 
+// Instancia del store de tickets
 const store = useTicketStore();
 
-// Refs de canvas
+// Referencias a los elementos canvas para los gráficos
 const statusCanvas = ref<HTMLCanvasElement | null>(null);
 const priorityCanvas = ref<HTMLCanvasElement | null>(null);
 
-// Instancias de Chart.js
+// Instancias de los gráficos de Chart.js
 let statusChart: Chart | null = null;
 let priorityChart: Chart | null = null;
 
-// KPIs
+// KPIs: cálculos reactivos para mostrar totales y por estado
 const total = computed(() => store.tickets.length);
 const abiertos = computed(() => store.tickets.filter(t => t.status === "Abierto").length);
 const enProgreso = computed(() => store.tickets.filter(t => t.status === "En Progreso").length);
 const cerrados = computed(() => store.tickets.filter(t => t.status === "Cerrado").length);
 
-// Cálculo por prioridad
+// KPIs por prioridad
 const alta = computed(() => store.tickets.filter(t => t.priority === "Alta").length);
 const media = computed(() => store.tickets.filter(t => t.priority === "Media").length);
 const baja = computed(() => store.tickets.filter(t => t.priority === "Baja").length);
 
+// Crea o actualiza el gráfico de estados
 function upsertStatusChart() {
     if (!statusCanvas.value) return;
     const data = [abiertos.value, enProgreso.value, cerrados.value];
 
+    // Si ya existe, actualiza los datos
     if (statusChart) {
         statusChart.data.datasets[0].data = data;
         statusChart.update();
         return;
     }
 
+    // Si no existe, crea el gráfico
     statusChart = new Chart(statusCanvas.value.getContext("2d")!, {
         type: "doughnut",
         data: {
@@ -90,16 +97,19 @@ function upsertStatusChart() {
     });
 }
 
+// Crea o actualiza el gráfico de prioridades
 function upsertPriorityChart() {
     if (!priorityCanvas.value) return;
     const data = [alta.value, media.value, baja.value];
 
+    // Si ya existe, actualiza los datos
     if (priorityChart) {
         priorityChart.data.datasets[0].data = data;
         priorityChart.update();
         return;
     }
 
+    // Si no existe, crea el gráfico
     priorityChart = new Chart(priorityCanvas.value.getContext("2d")!, {
         type: "bar",
         data: {
@@ -124,19 +134,22 @@ function upsertPriorityChart() {
     });
 }
 
+// Refresca ambos gráficos
 function refreshCharts() {
     upsertStatusChart();
     upsertPriorityChart();
 }
 
+// Al montar el componente, carga los tickets y dibuja los gráficos
 onMounted(() => {
     if (!store.tickets.length) store.loadFromStorage();
     refreshCharts();
 });
 
-// Actualiza gráficos cuando cambien los tickets (crear/editar/eliminar)
+// Observa cambios en los tickets y actualiza los gráficos automáticamente
 watch(() => store.tickets, () => refreshCharts(), { deep: true });
 
+// Limpia las instancias de los gráficos al desmontar el componente
 onBeforeUnmount(() => {
     statusChart?.destroy(); statusChart = null;
     priorityChart?.destroy(); priorityChart = null;
@@ -206,7 +219,7 @@ onBeforeUnmount(() => {
 
 .chart-wrap {
     height: 320px;
-    padding: 16px;
+    padding-bottom: 6em;
 }
 
 .chart-header {

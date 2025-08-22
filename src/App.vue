@@ -1,48 +1,53 @@
 <script setup lang="ts">
+// Importa utilidades de Vue y el store de tickets
 import { ref, onMounted } from "vue";
 import { useTicketStore, type Ticket } from "./store/ticketStore";
 
-import DashboardKpis from "./components/Dashboard.vue"; // opcional, si ya lo tienes
-import TicketList from "./components/TicketList.vue";
-import TicketForm from "./components/TicketForm.vue";
-import TicketModal from "./components/TicketModal.vue";
-import Modal from "./components/Modal.vue"; // modal genérico para crear
+// Importa componentes de la aplicación
+import DashboardKpis from "./components/Dashboard.vue"; // Dashboard de KPIs
+import TicketList from "./components/TicketList.vue";   // Lista de tickets
+import TicketForm from "./components/TicketForm.vue";   // Formulario de ticket
+import TicketModal from "./components/TicketModal.vue"; // Modal de detalle/edición
+import Modal from "./components/Modal.vue";             // Modal genérico para crear
 
 const store = useTicketStore();
 
-// Modales de detalle/editar
-const modalOpen = ref(false);
-const modalMode = ref<"view" | "edit">("view");
-const modalTicket = ref<Ticket | null>(null);
+// Estado para controlar el modal de detalle/edición
+const modalOpen = ref(false);                  // Si el modal está abierto
+const modalMode = ref<"view" | "edit">("view");// Modo del modal: ver o editar
+const modalTicket = ref<Ticket | null>(null);  // Ticket seleccionado en el modal
 
-// Modal de crear
-const showCreate = ref(false);
+// Estado para controlar el modal de creación
+const showCreate = ref(false);                 // Si el modal de crear está abierto
 
+// Al montar el componente, carga los tickets desde localStorage
 onMounted(() => store.loadFromStorage());
 
-// Handlers de la lista (menú emergente)
+// Handler para ver detalles de un ticket (abre el modal en modo "view")
 function handleView(t: Ticket) {
     modalMode.value = "view";
     modalTicket.value = t;
     modalOpen.value = true;
 }
+// Handler para editar un ticket (abre el modal en modo "edit")
 function handleEdit(t: Ticket) {
     modalMode.value = "edit";
     modalTicket.value = t;
     modalOpen.value = true;
 }
+// Handler para eliminar un ticket (confirma antes de eliminar)
 function handleDelete(t: Ticket) {
     if (confirm(`¿Eliminar ticket #${t.id}?`)) {
         store.deleteTicket(t.id);
     }
 }
 
-// Guardado desde el modal de edición
+// Handler que se ejecuta al guardar cambios en el modal de edición
 function onModalSaved() {
     modalOpen.value = false;
 }
 
-// Abrir modal de creación
+// Abre el modal de creación de ticket
 function openCreate() {
     showCreate.value = true;
 }
@@ -50,26 +55,31 @@ function openCreate() {
 
 <template>
     <div class="app">
-        <header class="header">
-            <h1>🎟️ TicketFast</h1>
-            <button class="btn primary" @click="openCreate">➕ Crear Ticket</button>
-        </header>
-
         <main>
-            <!-- Dashboard de KPIs (si lo usas) -->
+            <!-- Encabezado con título y botón para crear ticket -->
+            <header class="header">
+                <h1>TicketFast</h1>
+                <button class="btn primary" @click="openCreate">+ Crear Ticket</button>
+            </header>
+            <!-- Dashboard de KPIs (indicadores) -->
             <DashboardKpis />
 
-            <!-- Lista con menú emergente -->
+            <!-- Sección con la lista de tickets y menú contextual -->
             <section class="card">
                 <TicketList @view="handleView" @edit="handleEdit" @delete="handleDelete" />
             </section>
         </main>
 
-        <!-- Modal Detalle/Editar -->
-        <TicketModal v-if="modalOpen && modalTicket" :mode="modalMode" :ticket="modalTicket" @close="modalOpen = false"
-            @saved="onModalSaved" />
+        <!-- Modal para ver o editar ticket -->
+        <TicketModal
+            v-if="modalOpen && modalTicket"
+            :mode="modalMode"
+            :ticket="modalTicket"
+            @close="modalOpen = false"
+            @saved="onModalSaved"
+        />
 
-        <!-- Modal Crear -->
+        <!-- Modal para crear un nuevo ticket -->
         <Modal :open="showCreate" title="Crear Ticket" @close="showCreate = false">
             <TicketForm @saved="showCreate = false" />
         </Modal>

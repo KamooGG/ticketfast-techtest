@@ -1,12 +1,17 @@
 <script setup lang="ts">
+// Importa utilidades de Vue y el store de tickets
 import { reactive, watch } from "vue";
 import { useTicketStore, type Ticket, type TicketPriority, type TicketStatus } from "../store/ticketStore";
 
+// Instancia del store de tickets
 const store = useTicketStore();
 
+// Define las props que recibe el componente: un modelo de ticket opcional para edición
 const props = defineProps<{ model?: Ticket | null }>();
+// Define el evento 'saved' que se emite al guardar el ticket
 const emit = defineEmits<{ (e: "saved"): void }>();
 
+// Estado reactivo del formulario, omitiendo id, createdAt y updatedAt
 const form = reactive<Omit<Ticket, "id" | "createdAt" | "updatedAt">>({
     title: "",
     description: "",
@@ -15,18 +20,19 @@ const form = reactive<Omit<Ticket, "id" | "createdAt" | "updatedAt">>({
     assignedTo: "",
 });
 
+// Observa cambios en la prop 'model' para rellenar el formulario en modo edición
 watch(
     () => props.model,
     (m) => {
         if (m) {
-            // Modo edición
+            // Si hay modelo, carga los datos para edición
             form.title = m.title;
             form.description = m.description;
             form.status = m.status as TicketStatus;
             form.priority = m.priority as TicketPriority;
             form.assignedTo = m.assignedTo ?? "";
         } else {
-            // Modo crear
+            // Si no hay modelo, limpia el formulario (modo crear)
             form.title = "";
             form.description = "";
             form.status = "Abierto";
@@ -37,22 +43,27 @@ watch(
     { immediate: true }
 );
 
+// Envía el formulario: valida y llama a addTicket o updateTicket según corresponda
 function submitForm() {
     if (!form.title.trim() || !form.description.trim()) return;
 
     if (props.model) {
+        // Si hay modelo, actualiza el ticket existente
         store.updateTicket(props.model.id, { ...form });
     } else {
+        // Si no hay modelo, crea un nuevo ticket
         store.addTicket({ ...form });
     }
-    emit("saved");
+    emit("saved"); // Emite evento para notificar que se guardó
 }
 </script>
 
 <template>
     <div class="ticket-form">
+        <!-- Título dinámico según modo -->
         <h2>➕ {{ props.model ? "Editar Ticket" : "Crear Ticket" }}</h2>
 
+        <!-- Formulario de ticket -->
         <form @submit.prevent="submitForm">
             <div class="form-group">
                 <label for="title">Título *</label>

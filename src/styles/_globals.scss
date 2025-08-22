@@ -1,3 +1,5 @@
+@use "@/styles/variables" as *;
+
 body {
     font-family: $font-family;
     background: $light;

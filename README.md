@@ -42,7 +42,7 @@ TicketFast es una aplicación de ejemplo para la prueba técnica de Tickets. Pro
 - Vue 3 y TypeScript como base del front-end.
 - Pinia para la gestión del estado.
 - Vite para un entorno de desarrollo rápido
-- En el documento decía una manera de manejar en CRUD, en este proyecto se implementó una mejora en la que el detalle, la actualización y la eliminación hacen parte de un menú contextual, que se abre si se da click en la tabla, y la creación, desde un botón, haciendo que se implementara una ventana emergente para la creación del registro y este mismo componente se usaría para el detalle y la actualización con ciertos modificadores, como que en el detalle no se pueda editar la información.
+- En el documento decía una manera de manejar el CRUD, en este proyecto se implementó una mejora en la que el detalle, la actualización y la eliminación hacen parte de un menú contextual, que se abre si se da click en la tabla, y la creación, desde un botón, haciendo que se implementara una ventana emergente para la creación del registro y este mismo componente se usaría para el detalle y la actualización con ciertos modificadores, como que en el detalle no se pueda editar la información.
 
 ## Tiempo invertido
 
