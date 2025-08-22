@@ -7,7 +7,7 @@ import {
     type TicketPriority,
     type TicketStatus,
 } from "../store/ticketStore";
-import users from "@/data/users.json";
+import users from "../data/users.json";
 
 // Define el tipo para los usuarios del sistema
 type User = { id: number; nombre: string; email: string; rol: string };
