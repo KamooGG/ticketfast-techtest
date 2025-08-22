@@ -17,6 +17,9 @@ const ctx = reactive<{ open: boolean; x: number; y: number; ticket: Ticket | nul
 );
 
 // Define los eventos emitidos por el componente (ver, editar, eliminar)
+// en la empresa en la que estuve cada uno de los elementos del crud se hacían en botones
+// distintos, con accesos distintos, lo que propuse es que se hiciera un contextmenu para 
+// la gestión del crud desde el mismo registro, alivianando la interfaz
 const emit = defineEmits<{
     (e: "view", t: Ticket): void;
     (e: "edit", t: Ticket): void;

@@ -13,11 +13,11 @@ export interface Ticket {
     priority: TicketPriority;  // Prioridad del ticket
     createdAt: string;         // Fecha de creación (ISO)
     updatedAt: string;         // Fecha de última actualización (ISO)
-    assignedTo?: string;       // (Opcional) Persona asignada al ticket
+    assignedTo?: string;       // Persona asignada al ticket
 }
 
 // Clave para almacenar los tickets en localStorage
-const STORAGE_KEY = "ticketfast.tickets.v1";
+const STORAGE_KEY = "ticketmanager.tickets.v1";
 
 // Carga los tickets desde localStorage
 function load(): Ticket[] {

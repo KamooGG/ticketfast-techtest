@@ -25,7 +25,7 @@
             <header class="chart-header">
                 <h3>Tickets por estado</h3>
             </header>
-            <!-- Gráfico tipo torta para estados -->
+            <!-- Gráfico tipo doughnut para estados -->
             <canvas ref="statusCanvas" aria-label="Gráfico por estado"></canvas>
         </article>
 
@@ -68,6 +68,8 @@ const media = computed(() => store.tickets.filter(t => t.priority === "Media").l
 const baja = computed(() => store.tickets.filter(t => t.priority === "Baja").length);
 
 // Crea o actualiza el gráfico de estados
+// Siempre me ha gustado esta librería, toda la documentación se encuentra en:
+// https://www.chartjs.org/docs/latest/
 function upsertStatusChart() {
     if (!statusCanvas.value) return;
     const data = [abiertos.value, enProgreso.value, cerrados.value];
