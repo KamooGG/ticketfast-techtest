@@ -1,4 +1,5 @@
 @use "@/styles/variables" as *;
+@use "sass:color";
 
 body {
     font-family: $font-family;
@@ -32,7 +33,7 @@ body {
         background: $primary;
         color: white;
         &:hover {
-            background: darken($primary, 7%);
+            background: color.adjust($primary, $lightness: -7%);
         }
     }
 
@@ -40,7 +41,7 @@ body {
         background: $secondary;
         color: white;
         &:hover {
-            background: darken($secondary, 7%);
+            background: color.adjust($secondary, $lightness: -7%);
         }
     }
 
@@ -48,7 +49,7 @@ body {
         background: $danger;
         color: white;
         &:hover {
-            background: darken($danger, 7%);
+            background: color.adjust($danger, $lightness: -7%);
         }
     }
 }

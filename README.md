@@ -1,6 +1,6 @@
 
-# TicketFast
-TicketFast es una aplicación de ejemplo para la prueba técnica de Tickets. Proporciona una base con Vue 3, TypeScript y Vite para construir una interfaz de gestión de Tickets.
+# Ticket Manager
+Ticket Manager es una aplicación de ejemplo para la prueba técnica de Tickets. Proporciona una base con Vue 3, TypeScript y Vite para construir una interfaz de gestión de Tickets.
 
 ## Objetivos
 

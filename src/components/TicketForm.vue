@@ -1,14 +1,23 @@
 <script setup lang="ts">
 // Importa utilidades de Vue y el store de tickets
-import { reactive, watch } from "vue";
-import { useTicketStore, type Ticket, type TicketPriority, type TicketStatus } from "../store/ticketStore";
+import { reactive, watch, computed } from "vue";
+import {
+    useTicketStore,
+    type Ticket,
+    type TicketPriority,
+    type TicketStatus,
+} from "../store/ticketStore";
+import users from "@/data/users.json";
+
+// Define el tipo para los usuarios del sistema
+type User = { id: number; nombre: string; email: string; rol: string };
 
 // Instancia del store de tickets
 const store = useTicketStore();
 
-// Define las props que recibe el componente: un modelo de ticket opcional para edición
+// Props: recibe un ticket para editar (opcional)
 const props = defineProps<{ model?: Ticket | null }>();
-// Define el evento 'saved' que se emite al guardar el ticket
+// Evento emitido al guardar el ticket
 const emit = defineEmits<{ (e: "saved"): void }>();
 
 // Estado reactivo del formulario, omitiendo id, createdAt y updatedAt
@@ -43,10 +52,17 @@ watch(
     { immediate: true }
 );
 
+// Computed para las opciones del select de usuarios (asignación)
+const userOptions = computed(() =>
+    (users as User[]).map((u) => ({
+        value: u.nombre,
+        label: `${u.nombre} — ${u.rol}`,
+    }))
+);
+
 // Envía el formulario: valida y llama a addTicket o updateTicket según corresponda
 function submitForm() {
     if (!form.title.trim() || !form.description.trim()) return;
-
     if (props.model) {
         // Si hay modelo, actualiza el ticket existente
         store.updateTicket(props.model.id, { ...form });
@@ -61,7 +77,7 @@ function submitForm() {
 <template>
     <div class="ticket-form">
         <!-- Título dinámico según modo -->
-        <h2>➕ {{ props.model ? "Editar Ticket" : "Crear Ticket" }}</h2>
+        <h2>{{ props.model ? "Editar Ticket" : "Crear Ticket" }}</h2>
 
         <!-- Formulario de ticket -->
         <form @submit.prevent="submitForm">
@@ -97,14 +113,18 @@ function submitForm() {
 
             <div class="form-group">
                 <label for="assignedTo">Asignado a</label>
-                <input id="assignedTo" v-model="form.assignedTo" type="text" placeholder="Nombre del responsable" />
+                <select id="assignedTo" v-model="form.assignedTo">
+                    <option value="">-- Seleccionar --</option>
+                    <option v-for="opt in userOptions" :key="opt.value" :value="opt.value">
+                        {{ opt.label }}
+                    </option>
+                </select>
             </div>
 
             <button type="submit">{{ props.model ? "Guardar Cambios" : "Crear Ticket" }}</button>
         </form>
     </div>
 </template>
-
 <style scoped lang="scss">
 .ticket-form {
     h2 {
@@ -149,6 +169,16 @@ function submitForm() {
 
     button:hover {
         background: #16a34a;
+    }
+
+    @media (max-width: 680px) {
+        .form-inline {
+            grid-template-columns: 1fr;
+        }
+
+        button {
+            width: 100%;
+        }
     }
 }
 </style>

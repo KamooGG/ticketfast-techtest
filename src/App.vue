@@ -58,7 +58,7 @@ function openCreate() {
         <main>
             <!-- Encabezado con título y botón para crear ticket -->
             <header class="header">
-                <h1>TicketFast</h1>
+                <h1>Ticket Manager</h1>
                 <button class="btn primary" @click="openCreate">+ Crear Ticket</button>
             </header>
             <!-- Dashboard de KPIs (indicadores) -->
@@ -71,13 +71,8 @@ function openCreate() {
         </main>
 
         <!-- Modal para ver o editar ticket -->
-        <TicketModal
-            v-if="modalOpen && modalTicket"
-            :mode="modalMode"
-            :ticket="modalTicket"
-            @close="modalOpen = false"
-            @saved="onModalSaved"
-        />
+        <TicketModal v-if="modalOpen && modalTicket" :mode="modalMode" :ticket="modalTicket" @close="modalOpen = false"
+            @saved="onModalSaved" />
 
         <!-- Modal para crear un nuevo ticket -->
         <Modal :open="showCreate" title="Crear Ticket" @close="showCreate = false">
@@ -85,7 +80,6 @@ function openCreate() {
         </Modal>
     </div>
 </template>
-
 <style scoped>
 .header {
     display: flex;
@@ -93,6 +87,18 @@ function openCreate() {
     justify-content: space-between;
     margin: 16px 0;
     padding: 0 12px;
+    gap: 8px;
+}
+
+.header .btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+main {
+    padding: 0 12px;
+    max-width: 1140px;
+    margin: 0 auto;
 }
 
 .card {
@@ -104,27 +110,23 @@ function openCreate() {
     max-width: 1100px;
 }
 
-main {
-    padding: 0 12px;
-    max-width: 1140px;
-    margin: 0 auto;
-}
+@media (max-width: 680px) {
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-.btn {
-    padding: 8px 12px;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    cursor: pointer;
-    background: #f9fafb;
-}
+    .header h1 {
+        text-align: center;
+        margin: 0;
+    }
 
-.btn.primary {
-    background: #2563eb;
-    border-color: #2563eb;
-    color: #fff;
-}
+    .header .btn {
+        width: 100%;
+    }
 
-.btn.primary:hover {
-    background: #1d4ed8;
+    .card {
+        padding: 12px;
+    }
 }
 </style>
